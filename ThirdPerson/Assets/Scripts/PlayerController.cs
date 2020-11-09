@@ -58,7 +58,14 @@ public class PlayerController : MonoBehaviour
         {
             timeSinceButtonPressed = 0;
         }
-
+        if(Input.GetMouseButton(1))
+        {
+            Debug.Log("Left Click");
+            if(Input.GetMouseButtonUp(0))
+            {
+                Debug.Log("Right Click");
+            }
+        }
         timeSinceButtonPressed += Time.deltaTime;
     }
 
