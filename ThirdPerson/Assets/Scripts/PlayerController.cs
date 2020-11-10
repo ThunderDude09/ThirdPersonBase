@@ -14,8 +14,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     BoxCollider swordCollider;
 
+    public float throwForce = 50;
+
     Rigidbody rb;
     Animator anim;
+
+    bool playerIsAiming = false;
+    bool StartedAiming;
+    float timeSinceButtonHeld = 0.0f;
 
     bool startedCombo = false;
     float timeSinceButtonPressed = 0.0f;
@@ -23,6 +29,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
     }
@@ -30,43 +37,58 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        if (!playerIsAiming)
+        {
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
 
-        var camForward = mainCamera.forward;
-        var camRight = mainCamera.right;
+            var camForward = mainCamera.forward;
+            var camRight = mainCamera.right;
 
-        camForward.y = 0;
-        camForward.Normalize();
-        camRight.y = 0;
-        camRight.Normalize();
+            camForward.y = 0;
+            camForward.Normalize();
+            camRight.y = 0;
+            camRight.Normalize();
 
-        var moveDirection = (camForward * v * moveSpeed) + (camRight * h * moveSpeed);
+            var moveDirection = (camForward * v * moveSpeed) + (camRight * h * moveSpeed);
 
-        transform.LookAt(transform.position + moveDirection);
-        rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
+            transform.LookAt(transform.position + moveDirection);
+            rb.velocity = new Vector3(moveDirection.x, rb.velocity.y, moveDirection.z);
 
-        anim.SetFloat("moveSpeed", Mathf.Abs(moveDirection.magnitude));
+            anim.SetFloat("moveSpeed", Mathf.Abs(moveDirection.magnitude));
+        }
 
-        if(Input.GetButtonDown("Jump") && !startedCombo)
+
+        if (Input.GetButtonDown("Jump") && !startedCombo)
         {
             anim.SetTrigger("swordCombo");
             startedCombo = true;
         }
 
-        if(Input.GetButtonDown("Jump") && startedCombo)
+        if (Input.GetButtonDown("Jump") && startedCombo)
         {
             timeSinceButtonPressed = 0;
         }
-        if(Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && !StartedAiming)
         {
+            //playerIsAiming = true;
             Debug.Log("Left Click");
-            if(Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(0))
             {
                 Debug.Log("Right Click");
+                anim.SetTrigger("ThrowSword");;
+                //throwSword();
+                swordCollider.enabled = true;
             }
         }
+        if (Input.GetMouseButton(1) && !StartedAiming)
+        {
+            timeSinceButtonHeld = 0;
+        }
+
         timeSinceButtonPressed += Time.deltaTime;
+
+        timeSinceButtonHeld += Time.deltaTime;
     }
 
     public void PotentialComboEnd()
@@ -99,4 +121,10 @@ public class PlayerController : MonoBehaviour
         swordCollider.enabled = false;
     }
 
+    /*void throwSword()
+    {
+        transform.parent = null;
+        //Transform t = rb.GetComponentInChildren<Transform>().Find("Axe Model");
+        transform.Translate(0, 100, 0);
+    }*/
 }
