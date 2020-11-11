@@ -127,4 +127,6 @@ public class PlayerController : MonoBehaviour
         //Transform t = rb.GetComponentInChildren<Transform>().Find("Axe Model");
         transform.Translate(0, 100, 0);
     }*/
+
+    
 }

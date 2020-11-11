@@ -58,7 +58,11 @@ public class Sword : MonoBehaviour
             if(time < 1.0f)
             {
                 sword.position = getBQCPoint(time, old_pos, curve_point.position, target.position);
+                sword.rotation = Quaternion.Slerp(sword.transform.rotation, target.rotation, 50 * Time.deltaTime);
                 time += Time.deltaTime;
+            }else
+            {
+                ResetSword();
             }
         }
         //timeSinceButtonHeld += Time.deltaTime;
@@ -89,10 +93,20 @@ public class Sword : MonoBehaviour
 
     void ReturnSword()
     {
+        time = 0.0f;
         old_pos = sword.position;
         isReturning = true;
         sword.velocity = Vector3.zero;
         sword.isKinematic = true;
+    }
+
+    void ResetSword()
+    {
+        isReturning = false;
+        sword.transform.parent = transform;
+        sword.position = target.position;
+        sword.rotation = target.rotation;
+        sword.detectCollisions = false;
     }
 
     Vector3 getBQCPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
