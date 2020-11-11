@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
         {
             //playerIsAiming = true;
             Debug.Log("Left Click");
-            if (Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Right Click");
                 anim.SetTrigger("ThrowSword");;
