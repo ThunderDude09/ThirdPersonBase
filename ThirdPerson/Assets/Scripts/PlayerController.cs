@@ -76,9 +76,9 @@ public class PlayerController : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Right Click");
-                anim.SetTrigger("ThrowSword");;
+                anim.SetTrigger("ThrowSword");
+                TurnOnSwordCollider();
                 //throwSword();
-                swordCollider.enabled = true;
             }
         }
         if (Input.GetMouseButton(1) && !StartedAiming)

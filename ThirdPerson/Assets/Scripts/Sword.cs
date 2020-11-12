@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Sword : MonoBehaviour
 {
+    public float rotationSpeed;
+
     public static int moveSpeed = 4;
     public Vector3 userDirection = Vector3.right;
     bool playerHasThrown = false;
@@ -30,14 +32,12 @@ public class Sword : MonoBehaviour
     {
         if (Input.GetMouseButton(1))
         {
-
-            if (!playerHasSword)
-            {
-
-            }
+            
             //Debug.Log("Left Click");
             if (Input.GetMouseButtonDown(0) && playerHasSword == true)
             {
+                
+                timeSinceButtonHeld = 0;
                 //Debug.Log("Right Click");
                 transform.parent = null;
                 //sword.isKinematic = false;
@@ -65,7 +65,7 @@ public class Sword : MonoBehaviour
                 ResetSword();
             }
         }
-        //timeSinceButtonHeld += Time.deltaTime;
+        timeSinceButtonHeld += Time.deltaTime;
         /*if (playerHasThrown == true)
         {
             
@@ -98,15 +98,17 @@ public class Sword : MonoBehaviour
         isReturning = true;
         sword.velocity = Vector3.zero;
         sword.isKinematic = true;
+        playerHasSword = true;
     }
 
     void ResetSword()
     {
         isReturning = false;
-        sword.transform.parent = transform;
+        //sword.transform.parent = transform;
         sword.position = target.position;
         sword.rotation = target.rotation;
         sword.detectCollisions = false;
+        transform.parent = transform;
     }
 
     Vector3 getBQCPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
@@ -123,7 +125,8 @@ public class Sword : MonoBehaviour
         if (other.gameObject.tag == "Environment")
         {
             Debug.Log("triggered");
-            playerHasThrown = false;
+            sword.isKinematic = true;
+            //swordCollider.enabled = false;
         }
     }
 }
