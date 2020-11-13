@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float horizontalSpeed = 4.0F;
+
     [Header("Movement Variables")]
     [SerializeField]
     float moveSpeed = 3.0f;
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!playerIsAiming)
+        if (playerIsAiming == false)
         {
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -57,6 +59,12 @@ public class PlayerController : MonoBehaviour
 
             anim.SetFloat("moveSpeed", Mathf.Abs(moveDirection.magnitude));
         }
+        else if (playerIsAiming == true)
+        {
+            float h = horizontalSpeed * Input.GetAxis("Mouse X");
+            transform.Rotate(0, h, 0);
+
+        }
 
 
         if (Input.GetButtonDown("Jump") && !startedCombo)
@@ -71,7 +79,8 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetMouseButton(1) && !StartedAiming)
         {
-            //playerIsAiming = true;
+
+            playerIsAiming = true;
             Debug.Log("Left Click");
             if (Input.GetMouseButtonDown(0))
             {
@@ -80,6 +89,10 @@ public class PlayerController : MonoBehaviour
                 TurnOnSwordCollider();
                 //throwSword();
             }
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            playerIsAiming = false;
         }
         if (Input.GetMouseButton(1) && !StartedAiming)
         {

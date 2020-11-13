@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class Sword : MonoBehaviour
 {
+    public bool isAttacking = false;
+
     public float rotationSpeed;
 
     public static int moveSpeed = 4;
@@ -17,33 +20,52 @@ public class Sword : MonoBehaviour
     private bool isReturning = false;
     private float time = 0.0f;
 
+    public GameObject hand;
+
+    Animator anim;
+
     Rigidbody sword;
 
+    float timeSinceButtonWasPressed = 0.0f;
     float timeSinceButtonHeld = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
         sword = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
         sword.detectCollisions = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Jump"))
+        {
+            sword.detectCollisions = true;
+            isAttacking = true;
+            timeSinceButtonHeld = 0;
+        }
+        if (isAttacking == true)
+        {
+            if (timeSinceButtonHeld > .5f)
+            {
+                sword.detectCollisions = false;
+                isAttacking = false;
+            }
+        }
+        
+
         if (Input.GetMouseButton(1))
         {
-            
             //Debug.Log("Left Click");
             if (Input.GetMouseButtonDown(0) && playerHasSword == true)
             {
-                
-                timeSinceButtonHeld = 0;
                 //Debug.Log("Right Click");
                 transform.parent = null;
                 //sword.isKinematic = false;
-                //playerHasThrown = true;
-                playerHasSword = false;
                 sword.detectCollisions = true;
+                playerHasSword = false;
+                //anim.SetTrigger("ThrowSword");
                 ThrowSword();
             }
         }
@@ -65,6 +87,7 @@ public class Sword : MonoBehaviour
                 ResetSword();
             }
         }
+        timeSinceButtonWasPressed += Time.deltaTime;
         timeSinceButtonHeld += Time.deltaTime;
         /*if (playerHasThrown == true)
         {
@@ -73,14 +96,6 @@ public class Sword : MonoBehaviour
             //transform.Rotate(0, 0, -.5f);
         }*/
     }
-
-    /*void throwSword()
-    {
-        transform.Translate(userDirection * moveSpeed * Time.deltaTime);
-        //transform.Translate(1, 0, 0);
-        //sword.AddForce(Vector3.forward * 500);
-        //sword.AddForce(Camera.main.transform.TransformDirection(Vector3.forward) * throwForce, ForceMode.Impulse);
-    }*/
 
     void ThrowSword()
     {
@@ -108,7 +123,7 @@ public class Sword : MonoBehaviour
         sword.position = target.position;
         sword.rotation = target.rotation;
         sword.detectCollisions = false;
-        transform.parent = transform;
+        transform.parent = hand.transform;
     }
 
     Vector3 getBQCPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
@@ -127,6 +142,11 @@ public class Sword : MonoBehaviour
             Debug.Log("triggered");
             sword.isKinematic = true;
             //swordCollider.enabled = false;
+        }
+        if (other.gameObject.tag == "Enemy")
+        {
+            Debug.Log("triggered");
+            sword.isKinematic = true;
         }
     }
 }

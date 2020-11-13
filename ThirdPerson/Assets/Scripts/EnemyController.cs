@@ -31,6 +31,8 @@ public class EnemyController : MonoBehaviour
     float timeSinceHit = 0;
     bool foundAppropriate = false;
 
+    bool enemyIsFrozen = false;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -40,99 +42,103 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dead)
-
-            return;
-
-        timeSinceHit += Time.deltaTime;
-
-        goalLocation = FindObjectOfType<PlayerController>().transform.position;
-
-        //var fullVision = sight.Sight(90, 10, Color.red);
-        var directlyInFront = obstacleSight.GetSightInformation();// (90, 3, 3, Color.blue);
-
-        //blocked = false;
-
-        for (int i = 0; i < directlyInFront.Length; i++)
+        if (enemyIsFrozen == false)
         {
-            var current = directlyInFront[i];
+            if (dead)
 
-            if (current.seen == true && current.tag == "Environment")
+                return;
+
+            timeSinceHit += Time.deltaTime;
+
+            goalLocation = FindObjectOfType<PlayerController>().transform.position;
+
+            //var fullVision = sight.Sight(90, 10, Color.red);
+            var directlyInFront = obstacleSight.GetSightInformation();// (90, 3, 3, Color.blue);
+
+            //blocked = false;
+
+            for (int i = 0; i < directlyInFront.Length; i++)
             {
-                // we've got something blocking us
-                blocked = true;
+                var current = directlyInFront[i];
+
+                if (current.seen == true && current.tag == "Environment")
+                {
+                    // we've got something blocking us
+                    blocked = true;
+                }
+
             }
 
-        }
+            Debug.Log(blocked);
 
-        Debug.Log(blocked);
-
-        // if we're blocked, find the first sight that isn't obstructed and head that way
-        if (blocked)
-        {
-            if (!foundAppropriate)
+            // if we're blocked, find the first sight that isn't obstructed and head that way
+            if (blocked)
             {
-                HandleBlocked(directlyInFront);
+                if (!foundAppropriate)
+                {
+                    HandleBlocked(directlyInFront);
+                }
+
+                /*if (timeSinceChecked > 1)
+                {
+                    HandleBlocked(directlyInFront);
+                    timeSinceChecked = 0;
+                }*/
+
+                if (Vector3.Distance(transform.position, currentTargetLocation) < meleeRange)
+                {
+                    blocked = false;
+                    currentTargetLocation = goalLocation;
+                    //goalLocation = Vector3.zero;
+                }
             }
 
-            /*if (timeSinceChecked > 1)
+            else
             {
-                HandleBlocked(directlyInFront);
-                timeSinceChecked = 0;
-            }*/
-
-            if (Vector3.Distance(transform.position, currentTargetLocation) < meleeRange)
-            {
-                blocked = false;
                 currentTargetLocation = goalLocation;
+                foundAppropriate = false;
+            }
+
+            timeSinceChecked += Time.deltaTime;
+
+            Debug.DrawLine(currentTargetLocation, currentTargetLocation + Vector3.up * 5, Color.green);
+
+
+            if (shouldMove)
+            {
+                currentTargetLocation.y = 0;
+                //transform.LookAt(currentTargetLocation);
+
+                Quaternion toRotation = Quaternion.LookRotation(currentTargetLocation - transform.position);
+                transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, 0.5f * Time.deltaTime);
+            }
+
+            if (!shouldMove && Vector3.Distance(transform.position, goalLocation) > meleeRange * 2)
+            {
+                shouldMove = true;
+            }
+
+
+            if (Vector3.Distance(transform.position, goalLocation) < meleeRange)
+            {
+                shouldMove = false;
                 //goalLocation = Vector3.zero;
             }
+
+
+            var newVelocity = transform.forward * moveSpeed * (shouldMove ? 1 : 0);
+            newVelocity.y = GetComponent<Rigidbody>().velocity.y;
+
+            GetComponent<Rigidbody>().velocity = newVelocity;
+            GetComponent<Animator>().SetFloat("moveSpeed", GetComponent<Rigidbody>().velocity.magnitude);
         }
-
-        else
-        {
-            currentTargetLocation = goalLocation;
-            foundAppropriate = false;
-        }
-
-        timeSinceChecked += Time.deltaTime;
-
-        Debug.DrawLine(currentTargetLocation, currentTargetLocation + Vector3.up * 5, Color.green);
-
-
-        if (shouldMove)
-        {
-            currentTargetLocation.y = 0;
-            //transform.LookAt(currentTargetLocation);
-
-            Quaternion toRotation = Quaternion.LookRotation(currentTargetLocation - transform.position);
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, 0.5f * Time.deltaTime);
-        }
-
-        if (!shouldMove && Vector3.Distance(transform.position, goalLocation) > meleeRange * 2)
-        {
-            shouldMove = true;
-        }
-
-
-        if (Vector3.Distance(transform.position, goalLocation) < meleeRange)
-        {
-            shouldMove = false;
-            //goalLocation = Vector3.zero;
-        }
-
-
-        var newVelocity = transform.forward * moveSpeed * (shouldMove ? 1 : 0);
-        newVelocity.y = GetComponent<Rigidbody>().velocity.y;
-
-        GetComponent<Rigidbody>().velocity = newVelocity;
-        GetComponent<Animator>().SetFloat("moveSpeed", GetComponent<Rigidbody>().velocity.magnitude);
+        
 
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.tag == "Sword" && !dead && timeSinceHit > 1.0f)
+        if (other.gameObject.tag == "Sword" && !dead && timeSinceHit > 1.0f)
         {
             currentHealth -= 1;
 
@@ -180,5 +186,36 @@ public class EnemyController : MonoBehaviour
         foundAppropriate = true;
     }
 
-    
+    /*public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Sword")
+        {
+            enemyIsFrozen = true;
+            GetComponent<Animator>().enabled = false;
+        }
+    }
+
+    public void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Sword")
+        {
+            enemyIsFrozen = false;
+            GetComponent<Animator>().enabled = true;
+        }
+    }*/
+
+    public void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Sword")
+        {
+            enemyIsFrozen = true;
+            GetComponent<Animator>().enabled = false;
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        enemyIsFrozen = false;
+        GetComponent<Animator>().enabled = true;
+    }
 }
