@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     Transform mainCamera;
     [SerializeField]
     BoxCollider swordCollider;
+    [SerializeField]
+    Transform aimCamera;
 
     public float throwForce = 50;
 

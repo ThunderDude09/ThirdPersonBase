@@ -65,7 +65,7 @@ public class Sword : MonoBehaviour
                 //sword.isKinematic = false;
                 sword.detectCollisions = true;
                 playerHasSword = false;
-                //anim.SetTrigger("ThrowSword");
+                //anim.SetTrigger("Throw");
                 ThrowSword();
             }
         }
