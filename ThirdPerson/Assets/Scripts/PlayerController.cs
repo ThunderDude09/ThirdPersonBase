@@ -10,13 +10,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     float moveSpeed = 3.0f;
 
+    float moveSpeed2 = 3.0f;
+
     [Header("References")]
     [SerializeField]
     Transform mainCamera;
     [SerializeField]
     BoxCollider swordCollider;
-    [SerializeField]
-    Transform aimCamera;
+
+
+    public Transform aimCamera;
 
     public float throwForce = 50;
 
@@ -63,9 +66,21 @@ public class PlayerController : MonoBehaviour
         }
         else if (playerIsAiming == true)
         {
-            float h = horizontalSpeed * Input.GetAxis("Mouse X");
-            transform.Rotate(0, h, 0);
+            //aimCamera.SetActive(true);
+            //mainCamera = aimCamera;
+            
+            float h2 = horizontalSpeed * Input.GetAxis("Mouse X");
+            float v2 = Input.GetAxis("Vertical");
+            transform.Rotate(0, h2, 0);
+            /*var camForward2 = aimCamera.forward;
+            var camRight2 = aimCamera.right;
 
+            camForward2.y = 0;
+            camForward2.Normalize();
+            camRight2.y = 0;
+            camRight2.Normalize();
+
+            var moveDirection = (camForward2 * v2 * moveSpeed2) + (camRight2 * h2 * moveSpeed2);*/
         }
 
 
