@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Animator anim;
 
+    bool isPortalActive1 = true;
+
     bool playerIsAiming = false;
     bool StartedAiming;
     float timeSinceButtonHeld = 0.0f;
@@ -94,27 +96,31 @@ public class PlayerController : MonoBehaviour
         {
             timeSinceButtonPressed = 0;
         }
-        if (Input.GetMouseButton(1) && !StartedAiming)
+        if(isPortalActive1 == false)
         {
-
-            playerIsAiming = true;
-            Debug.Log("Left Click");
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(1) && !StartedAiming)
             {
-                Debug.Log("Right Click");
-                anim.SetTrigger("ThrowSword");
-                TurnOnSwordCollider();
-                //throwSword();
+
+                playerIsAiming = true;
+                Debug.Log("Left Click");
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Debug.Log("Right Click");
+                    anim.SetTrigger("ThrowSword");
+                    TurnOnSwordCollider();
+                    //throwSword();
+                }
+            }
+            if (Input.GetMouseButtonUp(1))
+            {
+                playerIsAiming = false;
+            }
+            if (Input.GetMouseButton(1) && !StartedAiming)
+            {
+                timeSinceButtonHeld = 0;
             }
         }
-        if (Input.GetMouseButtonUp(1))
-        {
-            playerIsAiming = false;
-        }
-        if (Input.GetMouseButton(1) && !StartedAiming)
-        {
-            timeSinceButtonHeld = 0;
-        }
+        
 
         timeSinceButtonPressed += Time.deltaTime;
 

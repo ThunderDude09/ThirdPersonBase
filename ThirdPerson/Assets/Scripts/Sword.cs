@@ -22,6 +22,8 @@ public class Sword : MonoBehaviour
 
     public GameObject hand;
 
+    bool isPortalActive = true;
+
     Animator anim;
 
     Rigidbody sword;
@@ -39,6 +41,42 @@ public class Sword : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isPortalActive == false)
+        {
+            if (Input.GetMouseButton(1))
+            {
+                //Debug.Log("Left Click");
+                if (Input.GetMouseButtonDown(0) && playerHasSword == true)
+                {
+                    //Debug.Log("Right Click");
+                    transform.parent = null;
+                    //sword.isKinematic = false;
+                    sword.detectCollisions = true;
+                    playerHasSword = false;
+                    //anim.SetTrigger("Throw");
+                    ThrowSword();
+                }
+            }
+            if (Input.GetMouseButtonDown(2))
+            {
+                ReturnSword();
+                //timeSinceButtonHeld = 0;
+            }
+
+            if (isReturning)
+            {
+                if (time < 1.0f)
+                {
+                    sword.position = getBQCPoint(time, old_pos, curve_point.position, target.position);
+                    sword.rotation = Quaternion.Slerp(sword.transform.rotation, target.rotation, 50 * Time.deltaTime);
+                    time += Time.deltaTime;
+                }
+                else
+                {
+                    ResetSword();
+                }
+            }
+        }
         if (Input.GetButtonDown("Jump"))
         {
             sword.detectCollisions = true;
@@ -55,38 +93,7 @@ public class Sword : MonoBehaviour
         }
         
 
-        if (Input.GetMouseButton(1))
-        {
-            //Debug.Log("Left Click");
-            if (Input.GetMouseButtonDown(0) && playerHasSword == true)
-            {
-                //Debug.Log("Right Click");
-                transform.parent = null;
-                //sword.isKinematic = false;
-                sword.detectCollisions = true;
-                playerHasSword = false;
-                //anim.SetTrigger("Throw");
-                ThrowSword();
-            }
-        }
-        if (Input.GetMouseButtonDown(2))
-        {
-            ReturnSword();
-            //timeSinceButtonHeld = 0;
-        }
-
-        if (isReturning)
-        {
-            if(time < 1.0f)
-            {
-                sword.position = getBQCPoint(time, old_pos, curve_point.position, target.position);
-                sword.rotation = Quaternion.Slerp(sword.transform.rotation, target.rotation, 50 * Time.deltaTime);
-                time += Time.deltaTime;
-            }else
-            {
-                ResetSword();
-            }
-        }
+        
         timeSinceButtonWasPressed += Time.deltaTime;
         timeSinceButtonHeld += Time.deltaTime;
         /*if (playerHasThrown == true)
