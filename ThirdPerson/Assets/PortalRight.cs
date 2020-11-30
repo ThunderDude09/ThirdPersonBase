@@ -6,6 +6,9 @@ public class PortalRight : MonoBehaviour
 {
     Vector3 newPosition;
 
+    public GameObject FoundObject;
+    public string RaycastReturn;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +26,9 @@ public class PortalRight : MonoBehaviour
             {
                 newPosition = hit.point;
                 transform.position = newPosition;
+                RaycastReturn = hit.collider.gameObject.name;
+                FoundObject = GameObject.Find(RaycastReturn);
+                transform.forward = new Vector3(FoundObject.transform.forward.x, transform.forward.y, FoundObject.transform.forward.z);
             }
         }
     }
