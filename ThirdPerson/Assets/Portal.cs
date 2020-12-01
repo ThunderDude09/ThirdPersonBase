@@ -41,7 +41,8 @@ public class Portal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        var plane = new Plane(normalVisible.forward, transform.position);
+        vectorPlane = new Vector4(plane.normal.x, plane.normal.y, plane.normal.z, plane.distance);
     }
 
     private void LateUpdate()
