@@ -21,7 +21,6 @@ public class Portal : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         viewThroughRenderTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.DefaultHDR);
         viewThroughRenderTexture.Create();
 
@@ -41,6 +40,8 @@ public class Portal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        portalCamera.targetTexture = viewThroughRenderTexture;
+
         var plane = new Plane(normalVisible.forward, transform.position);
         vectorPlane = new Vector4(plane.normal.x, plane.normal.y, plane.normal.z, plane.distance);
     }
